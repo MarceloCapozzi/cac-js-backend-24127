@@ -1,0 +1,29 @@
+# docs: https://docs.docker.com/compose/
+version: '3.8'
+
+x-logging: # extension fields added since docker-compose v3.4
+  &default-logging
+  driver: "json-file"
+  options:
+    max-size: "50m"
+    max-file: "3"
+
+volumes:
+  db_data:
+
+# docs: https://hub.docker.com/_/mysql
+services:
+  db:
+    image: $MYSQL_DOCKER_IMAGE
+    restart: $MYSQL_DOCKER_RESTART_POLICY
+    container_name: $MYSQL_DOCKER_CONTAINER_NAME
+    logging: *default-logging
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+    ports:
+      - "$MYSQL_PORT_EXTERNAL:$MYSQL_PORT_INTERNAL"
+    volumes:
+      - db_data:/var/lib/mysql
